@@ -1,0 +1,98 @@
+#Utilizando el archivo abalone.txt, trate de establecer una relación entre el peso total y el diámetro del espécimen.
+#Empezar dibujando en un scatter plot ambos parámetros. Basándose en eso, considere los siguientes modelos:
+#  a) Modelo lineal simple, Peso = b + aDiametro.
+#  b) Modelo cuadrático, Peso = c + bDiametro + aDiametro2.
+#  c) Modelo cúbico sin términos de orden inferior, Peso = aDiametro3.
+#  d) Modelo exponencial, log(Peso) = b + aDiametro.
+#1. Efectue en cada caso una regresión y graﬁque las curvas superpuestas sobre el scatter plot.
+#2. Identiﬁque el ”mejor” modelo mediante un esquema de training y testing set, quedándose con el que minimiza el error cuadrático medio en el conjunto de testing.
+
+library(MASS)
+library(caTools)
+
+datos<-read.table("/home/luciakasman/Documentos/Aprendizaje Estadístico/abalone.txt", sep=",")
+
+#separo en training set y testing set
+
+set.seed(88)
+index<-sample(1:nrow(datos), size=0.7*nrow(datos))
+train = datos[index,]
+test = datos[-index,]
+
+plot(train$V3,train$V5,xlab="Diámetro",ylab="Peso Total")
+
+#a) Modelo lineal simple
+
+reg<-lm(V5~V3, data=train)
+summary(reg)
+
+abline(reg$coefficients[1], reg$coefficients[2], col="red")
+
+
+#b) Modelo cuadrático
+
+reg2<-lm(V5~V3+I(V3^2), data=train)
+summary(reg2)
+
+curve(reg2$coefficients[1] + reg2$coefficients[2]*x + reg2$coefficients[3]*(x**2), add=TRUE, col="green")
+
+#c) Modelo cúbico sin términos de orden inferior
+
+reg3<-lm(V5~I(V3^3)-1, data=train)
+summary(reg3)
+
+curve(reg3$coefficients[1]*(x**3), add=TRUE, col="blue")
+
+#d) Modelo exponencial
+
+reg4<-lm(log(V5)~V3, data=train)
+summary(reg4)
+
+curve(exp(reg4$coefficients[1]+reg4$coefficients[2]*x), add=TRUE, col="yellow")
+
+
+#Uso el testing set
+
+p<-predict(reg,test)
+
+actuals_preds <- data.frame(cbind(actuals=test$V5, predicteds=p)) 
+correlation_accuracy<-cor(actuals_preds)
+
+
+p2<-predict(reg2,test)
+
+actuals_preds2<-data.frame(cbind(actuals=test$V5, predicteds=p2))
+correlation_accuracy2<-cor(actuals_preds2)
+
+
+p3<-predict(reg3,test)
+
+actuals_preds3<-data.frame(cbind(actuals=test$V5, predicteds=p3))
+correlation_accuracy3<-cor(actuals_preds3)
+
+
+p4<-predict(reg4,test)
+
+actuals_preds4<-data.frame(cbind(actuals=test$V5, predicteds=p4)) 
+correlation_accuracy4<-cor(actuals_preds4)
+
+#Calculo el RSS
+
+calcular_RSS<-function(newdataframe){
+  RSS<-0
+  for(i in 1:nrow(newdataframe)){
+    RSS<-RSS+(newdataframe[i,1]-newdataframe[i,2])^2
+  }
+  return(RSS)
+}
+
+RSS1<-calcular_RSS(actuals_preds)
+RSS1
+RSS2<-calcular_RSS(actuals_preds2)
+RSS2
+RSS3<-calcular_RSS(actuals_preds3)
+RSS3
+RSS4<-calcular_RSS(actuals_preds4)
+RSS4
+
+#El modelo que mejor ajusta es el cúbico
