@@ -1,4 +1,17 @@
-#Ejercicio 4
+"En el archivo productos.txt tenemos un registro de productos que fueron exitosos y otros que fracasaron, junto con información de su precio y de su presupuesto en marketing.
+
+a) Levantar los datos del archivo y graﬁcarlos, en negro los productos “exitosos” y en rojo los “fracasados”. 
+
+b) Para determinar un valor óptimo k de vecinos m´as cercanos se propone: 
+  1) Estandarizar el total de los datos con alguno de los dos esquemas propuestos. 
+  2) Particionar el conjunto en un training y un testing set. 
+  3) Para un valor de k y un mecanismo de estandarizaci´on clasiﬁcar los elementos del testing set en función del training set, aplicar como función de costo la cantidad de datos incorrectamente clasiﬁcados. 
+  4) Repetir con diversos valores de k y elegir como modelo aquel que minimice la funci´on de costo. 
+
+c) Replique el ejercicio anterior con un mecanismo de K-Fold para elegir el k de vecinos más cercanos. 
+
+d) Clasiﬁcar un producto con precio $70 y un presupuesto de marketing de $100000 utilizando el modelo óptimo encontrado antes."
+
 #a)
 datos <- read.table("/home/luciakasman/Documentos/Aprendizaje Estadístico/Ejercicios KNN/producto.txt", header=TRUE)
 
